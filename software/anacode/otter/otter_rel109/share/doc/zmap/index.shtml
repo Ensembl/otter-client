@@ -1,0 +1,30 @@
+<!--#set var="banner" value="ZMap Help"-->
+<!--#include virtual="/perl/header"-->
+<!--#set var="author" value="edgrif@sanger.ac.uk" -->
+
+<fieldset>
+
+<legend>Documentation for zmap</legend>
+
+<p>Getting the most out of zmap...</p>
+
+<ul>
+  <li><a href="zmap_quick_start.shtml">Quick start guide</a>
+    <li><a href="configuration.shtml">Running and configuring ZMap</a>
+  <li><a href="user_interface.shtml">User interface</a>
+  <li><a href="keyboard_mouse.shtml">Keyboard and mouse operation</a>
+  <li><a href="styles.shtml">Styles</a>
+  <li><a href="ZMap_User_Manual.pdf">User manual</a>
+</ul>
+
+</fieldset>
+<br />
+
+<p>Authors: <a href="mailto:edgrif@sanger.ac.uk">Ed Griffiths &lt;edgrif@sanger.ac.uk&gt;</a>
+&amp; <a href="mailto:rds@sanger.ac.uk">Roy Storey &lt;rds@sanger.ac.uk&gt;</a>
+
+<p>
+
+
+<!--#include virtual="/perl/footer"-->
+

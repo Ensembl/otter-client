@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Should move hcon into submissions
+# This script would then just be a link to exec_in_submissons_scripts
+
+script=`basename $0`
+dir=`dirname $0`
+
+want_ANACODE_ENV_TYPE=humscripts
+. $dir/setup_anacode_env
+
+# was exec /software/bin/perl -w
+# changed to honour the script's choice 20120821 mca
+exec /software/anacode/humscripts/$script $@

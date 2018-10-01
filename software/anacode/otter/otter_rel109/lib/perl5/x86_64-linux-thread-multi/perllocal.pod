@@ -1,0 +1,22 @@
+=head2 Thu Apr 20 15:25:38 2017: C<Module> L<Zircon|Zircon>
+
+=over 4
+
+=item *
+
+C<installed into: /software/anacode/otter/otter_rel106.10.new.yBvNas/lib/perl5>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.05>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

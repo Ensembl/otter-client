@@ -1,0 +1,123 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+package Bio::Otter::GetScript::Filter;
+
+use Digest::MD5 qw(md5_hex);
+
+use Bio::Otter::Utils::AccessionInfo::Serialise qw(unescape_fasta_description);
+
+use base 'Bio::Otter::Utils::GetScript';
+
+sub version      { return 'filter_get 0.5'; }
+sub log_filename { return 'gff_log.txt'; }
+
+my $LOG = 1;
+
+sub do_it {
+    my ($self) = @_;
+
+    my $args = $self->args;
+
+    # pull off arguments meant for us
+    my ($server_script) = $self->read_delete_args( qw( server_script ) );
+
+    $args->{log} = 1 if $LOG; # enable logging on the server
+
+    # concatenate the rest of the arguments into a parameter string
+    my $params = $self->format_params($args);
+
+    my $gff_source = $args->{gff_source};
+    my $gff_filename = sprintf '%s_%s.gff', $gff_source, md5_hex($params);
+
+    my $top_dir = $self->mkdir_tested('gff_cache');
+    my $cache_file = $top_dir.'/'.$gff_filename;
+
+    if (-e $cache_file) {
+        # cache hit
+        $self->log_message("cache file: $gff_filename: cache hit");
+        open my $gff_file, '<', $cache_file or die "Failed to open cache file: $!\n";
+        $self->_spool_gff($gff_file);
+        close $gff_file or die "Failed to close cache file: $!\n";
+        return;
+    }
+
+    # cache miss
+
+    # only require these packages now, so we don't take the import hit on a cache hit
+    $self->do_requires;
+    $self->log_incs('After do_requires');
+
+    $self->log_message("cache file: $gff_filename: cache miss");
+
+    my $gff = $self->do_http_request('GET', $server_script, $params);
+
+    # cache the result
+    $self->time_diff_for(
+        'caching', sub {
+            open my $cache_file_h, '>', $cache_file
+                or die "Cannot write to cache file '$cache_file'; $!\n";
+            print $cache_file_h $gff;
+            close $cache_file_h
+                or die "Error writing to '$cache_file'; $!";
+        });
+
+    # update the SQLite db
+    $self->update_local_db($gff_source, $cache_file, 1);
+
+    # if (rand() < 0.5) {
+    #     die "Horribly";
+    # }
+
+    # Send data to zmap on STDOUT
+    open my $gff_string_fh, '<', \$gff or die "Failed to open GFF string as file handle: $!\n";
+    $self->_spool_gff($gff_string_fh);
+
+    return;
+}
+
+# Side-effect: closes STDOUT
+#
+sub _spool_gff {
+    my ($self, $fh) = @_;
+
+    $self->time_diff_for('sending data', sub {
+        while (my $line = <$fh>) {
+            if ($line =~ /^>/) {
+                # FASTA header
+                print unescape_fasta_description($line);    ### Why do we do this here?
+            } else {
+                print $line;
+            }
+        }
+                         });
+
+    # zmap waits for STDOUT to be closed as an indication that all
+    # data has been sent, so we close the handle now so that zmap
+    # doesn't tell otter about the successful loading of the column
+    # before we have the SQLite db updated and the cache file saved.
+    close STDOUT or die "Error writing to STDOUT; $!";
+
+    return;
+}
+
+## no critic (Modules::ProhibitMultiplePackages)
+
+package main;
+
+use Log::Log4perl::Level;
+
+Bio::Otter::GetScript::Filter
+    ->new(log4perl => $DEBUG)
+    ->run;
+
+exit;
+
+__END__
+
+=head1 AUTHOR
+
+Ana Code B<email> anacode@sanger.ac.uk
+

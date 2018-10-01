@@ -1,0 +1,390 @@
+<head>
+  <title>ZMap - Release Notes</title>
+</head>
+
+
+<body>
+<h2>ZMap - Release Notes</h2>
+
+<h4>Version 2.12.0</h4>
+<ul>
+  <li>When importing a file, ZMap will now prompt the user for the file type if it cannot be determined from the filename extension.
+  <li>File types are now passed through from the track hub registry, so they do not have to be determined by filename extensions.
+  <li>Featuresets now have a record of the source they were loaded from. This is displayed in the info bar when you click on a feature, and is also shown in the Columns dialog.
+  <li>The Columns dialog has improved search/filter functionality which can act on any text column.
+  <li>There is now a configurable limit (max-features in the ZMap stanza), which is a hard limit for the number of features ZMap will attempt to load.
+  <li>Various improvements to the sources list on the Main Window and Import dialog to make it easier to manage sources.
+  <li>RT550986: Fix a bug changing the group/style for tracks.
+  <li>Fix a crash bug which could happen when encountering errors while loading bed/bigBed/bigWig files.
+  <li>Fix a bug loading extended bigBed files.
+</ul>
+
+<h4>Version 2.11.6</h4>
+<ul>
+  <li>Fix spurious warning messages introduced in 2.11.5
+</ul>
+
+<h4>Version 2.11.5</h4>
+<ul>
+  <li>Fix a bug displaying spliced reads - RT '542750'
+</ul>
+
+<h4>Version 2.11.4</h4>
+<ul>
+  <li>Fix a problem where saving the configuration could write an empty file if no changes have been made.
+  <li>Fix a regression from 2.11.0 where edited sources cannot be saved.
+</ul>
+
+<h4>Version 2.11.3</h4>
+<ul>
+  <li>Fix a potential crash in trackhub functionality caused by empty error messages.
+</ul>
+
+<h4>Version 2.11.2</h4>
+<ul>
+  <li>Fix a bug using trackhub support in the Otter Mac distribution due to incorrect cainfo location.
+</ul>
+
+<h4>Version 2.11.1</h4>
+<ul>
+  <li>Add .gff3 to list of supported filename extensions, and make extensions case-insensitive.
+</ul>
+  
+<h4>Version 2.11.0</h4>
+<ul>
+  <li> Add track hub support. This uses the Ensembl Track Hub Registry. Users can search for existing track hubs in the registry, or register and view their own track hubs (requires an account on trackhubregistry.org).
+  <li> Add support for Bed, bigBed, bigWig, VCF and BCF file formats.
+  <li> Generalise the Import dialog so that all source types, including track hub and Ensembl sources, can be imported into an existing ZMap session as well as being created from the startup window.
+  <li>
+</ul>
+
+<h4>Version 2.10.2</h4>
+<ul>
+  <li>RT545665: Fix a bug where incorrect coordinates were being used for some Ensembl features when the zmap range start is > 1.
+</ul>
+
+<h4>Version 2.10.1</h4>
+<ul>
+  <li> Fix a regression from 2.10.0
+</ul>
+
+<h4>Version 2.10.0</h4>
+<ul>
+  <li>RT532732 - Change all usage of coord transform calls to call fixed
+  funciton, make coord translating handle slice and chromosome views</li>
+</ul>
+
+<h4>Version 2.9.0</h4>
+<ul>
+  <li>Fix bug in start/end_not_found handling. - RT523445
+  <li>Remove start/end_not_found, wrong place. - RT523445
+  <li>Fix a problem creating zmap's compile date file meaning it had to be compiled twice - RT523795
+</ul>
+
+<h4>Version 2.8.0</h4>
+<ul>
+  <li> Fix a bug saving the column order in zmap (rt517878)
+</ul>
+
+<h4>Version 2.7.1</h4>
+<ul>
+  <li>RT '524700' Fix a regression introduced in 2.6.0 where some transcripts are not loading from ensembl.
+</ul>
+
+
+<h4>Version 2.7.0</h4>
+<ul>
+  <li>RT 519209 Fix a bug where colinearity line colour is wrong for composite BAM reads.
+  <li>RT 521742 Fix a bug calling blixem on bam columns.
+  <li>RT 514386 Fix a bug where ZMap crashes when trying to pfetch over http.
+</ul>
+
+
+<h4>Version 2.6.0</h4>
+<ul>
+  <li>RT516368: Add an Edit button to standalone-ZMap's main window so that you can edit sources.
+  <li>Add a Filter box to the search dialog for looking up Ensembl databases/featuresets/biotypes.
+  <li>RT514113: Fixed a bug with Ensembl where transcripts weren't always being loaded if their logic_name is different to the gene's logic_name.
+  <li>Fixed a bug in ZMap's Create Source dialog where the incorrect text was being used for the biotypes list
+</ul>
+
+<h4>Version 2.5.2</h4>
+<ul>
+  <li>SIRT:515503 Fix a bug where columns in the [columns] stanza are not created unless they are also in the "columns" field in the [ZMap] stanza. This was a regression introduced in v2.4.0.
+</ul>
+  
+<h4>Version 2.5.1</h4>
+<ul>
+  <li>Fix a compile error on some machines due to a missing reference to a header file
+</ul>
+  
+<h4>Version 2.5.0</h4>
+<ul>
+  <li>ZMap's main window (shown when you start ZMap without arguments) now has buttons which let you easily add sources for either an Ensembl database or a file. For Ensembl sources, you can search for a list of databases/featuresets/biotypes. The public host details are provided by default, or you can enter your own host. The sources can be saved to a config file for re-use.
+  <li>ZMap can now load files from ftp/http sources on startup, as well as from the Import dialog.
+  <li>Changes made on the Columns dialog can now be saved to the user preferences from the File->Save menu on the dialog.
+  <li>ZMap can now run Blixem on imported BAM file columns, as well as pre-configured ones.
+  <li>ZMap now validates the styles hierarchy and rejects any styles with cyclic dependencies.
+  <li>SIRT:501033 ZMap now supports pfetch over https.
+  <li>Add VULGAR string support to zmap (under-the-hood changes only as we don't display vulgar currently.)
+  <li>SIRT:501710 Fixed a bug with pfetch in zmap where a libcurl error condition was not being handled correctly.
+  <li>Fixed several bugs to do with styles/column configuration:
+  <ul>
+    <li>the Strand Separator was being moved to the wrong position when you reorder columns
+    <li>ZMap wasn't being redrawn correctly after reordering columns
+    <li>all configured columns were displaying on the Columns dialog even if not loaded
+    <li>transparent styles weren't working in the Edit Style dialog
+    <li>assigning a style was failing for columns with more than one style
+    <li>assigning a style was failing when the columns list is sorted or filtered
+  </ul>
+</ul>
+
+<h4>Version 2.4.1</h4>
+<ul>
+  <li>Fix a bug loading BAM files that contain more than one sequence.
+</ul>
+
+<h4>Version 2.4.0</h4>
+<ul>
+  <li> Bug in feature filtering (keyboard shortcut) has been fixed
+  <li> Bug in ZMap interface with up and down keys fixed (SIRT:495468)
+  <li> User preferences in ZMap may now be saved (File->Save menu in preferences dialogue)
+  <li> ZMap styles are available through the Edit menu.
+  <li> Columns dialogue has been reworked for greater flexibility (see Help menu in Columns dialogue)
+  <li> Numerous updates and modifications to build systems for otter and ZMap/Seqtools
+</ul>
+
+<h4>Version 2.3.0</h4>
+<ul>
+  <li>The Columns dialog has been reorganised into a single list of featuresets with strand-specific options.
+  <li>Columns can now be dynamically reordered using the up/down buttons on the Columns dialog. The new order can be exported to a configuration file using the menu File->Export->Configuration.
+  <li>Added functionality to load supporting evidence from Ensembl databases.
+  <li>Added new configuration options to allow the user to specify the colour for the rubber band and ruler bar (these were hard-coded as black before, which doesn't work well on a dark background).
+  <li>Added column-groups configuration option to allow multiple different groupings of columns for blixem.
+  <li>Fixed a bug where column backgrounds were always being set to white after you filter a column - it now uses the configured background colour.
+  <li>Fixed a bug calling blixem on certain reads which have an insertion/intron adjacent to each other. ZMap was skipping the second operator in the cigar string so the alignment was bad in blixem.
+  <li>Fixed a bug where a new style was not being created when editing a featureset with a default style.
+  <li>Fixed an error building zmap on machines which have an incomplete installation of mysql.
+</ul>
+
+<h4>Version 2.2.1</h4>
+<ul>
+  <li>Fix a bug where incorrect alignments were being exported to Blixem for alignments that contain adjacent insertions and introns.
+</ul>
+
+<h4>Version 2.2.0</h4>
+<ul>
+  <li>Added configuration to allow the user to specify which biotypes to load from an Ensembl database.
+  <li>Style editing and export in ZMap: the user can now explicitly create a new style or edit an existing one, and export the modified styles to a file.
+  <li>Configuration editing and export in ZMap: the user can now export ZMap's configuration settings to a file, including any options they have modified via the Preferences dialog.
+  <li>New feature filter window offering the user much more and much easier control over filtering.
+  <li>Fix major memory leaks when loading an Ensembl source, in particular when only loading a small subset of features from a database.	
+  <li>(RT:468772) Fix a problem where ZMap could open Blixem on the wrong range when using the keyboard shortcut.
+  <li>Fix intrusive warning messages when editing the Blixem preferences. (Warning messages could pop up about the script/config file being invalid while you were still trying to finish typing.)
+  <li> Fix a bug where new features created within ZMap could be given the wrong SO term when they are exported.
+  <li>Allow pipe symbol in gff text.
+  <li>(RT:485716) Memory allocation error in xml handling code caused later error in freeing that memory.
+</ul>
+
+<h4>Version 2.1.0</h4>
+<ul>
+  <li> Editing in zmap: improve the Annotation menu options, and add a facility to export the temp feature without having to assign it to a featureset
+  <li> Call pfetch from ZMap right-click menu caused a segmentation fault on mac - Corrected a couple of unsafe calls to g_free() in calling code.
+  <li> (RT:485214) File import dialogue has incorrect coordinates - Code to call file import handled revcomping and mark setting incorrectly
+  <li> (RT:484181) Fix a ZMap crash - string problem flagged up by the move to cpp
+  <li> Fix a problem where failed columns come back as Empty
+  <li> Fix intermittent crashing when loading ensembl databases
+  <li> Fix a bug where ensembl features of different types could appear in the same column
+  <li> Fix a bug where the source name was not being set for some ensembl features
+  <li> Fixes memory leaks in ensembl server code
+  <li> Fix several problems in mouse pointer handling where e.g. dragging was not being cancelled
+</ul>
+
+<h4>Version 2.0.0</h4>
+<ul>
+  <li>Converted code base to C++
+  <li>Ensembl sources now only load the requested featuresets, if specified
+  <li>Ensembl sources can now have an optional database prefix
+  <li>Add logging of command line used by zmap to start a new child pipe process
+  <li>Fix a bug in edit style dialog where wrong colour is set
+  <li>Fix a bug for drawing transcripts
+  <li>Fix a crash that could happen when overwriting a feature used as evidence for the Annotation feature
+  <li>Fix several bugs with mouse click handling
+</ul>
+
+<h4>Version 1.7.0</h4>
+<ul>
+  <li>Display can now toggle between slice and chromosome coordinates (see ZMap/View menu)
+  <li>Option to export a single feature has now been added to the right-click menu
+  <li>Some generalisation of the configuration for standalone ZMap
+  <li>Bug fixes to feature filtering, horizon and tooltip display
+  <li>Bug fixes to feature search window 
+  <li>Prototype of ensemble connection now in place
+  <li>Window size on startup (on mac) has been corrected 
+  
+</ul>
+
+<h4>Version 1.6.0</h4>
+<ul>
+  <li>Add n/N shortcut key to get nucleotide sequence for a feature
+  <li>Feature filtering: a new menu feature to allow the filtering of a set of features in comparision to a selected feature in serveral ways (show mismatching introns, show mismatching exons, show matching exons, or show matching cds).
+  <li>Add a column hide command for remote protocol - RT 455660
+  <li>ZMap now reports a features_loaded error if no features are loaded because they have been discarded - RT 456865
+  <li>Small change to clipping logic for alignment features (related to RT 417362)
+  <li>Code reorganisation: move some code into a new 'gbtools' library of utility functions
+  <li>Bug fix for long feature and featureset names in right-click menus - RT 463363
+  <li>Fix a bug with zooming to small features - RT 462835
+  <li>Fix a crash when searching for all features in all featuresets - RT 462835
+  <li>Bug fix to server return codes
+  <li>Bug fix where ZMap scrolls to the wrong place when selecting a search result - RT 461328
+  <li>Fix to gap string parsing
+  <li>Missing alignment features now correctly included in zmap - RT 417362
+  <li>Fix for lasso select evidence on test release - RT 458109
+  <li>Fix a bug with bumping columns with a mixture of alignment and basic features - RT 371426
+  
+</ul>
+
+<h4>Version 1.5.0</h4>
+<ul>
+  <li> Make config file optional for blixem (SIRT:455638)
+  <li> Incorrect Gap string in output GFF (SIRT:455638)
+  <li> Addition of single exon selection and pasting of coords in 'CHR#:start,end' format (for codalign)
+  <li> Listing features; using the right-click menus in a column, the "list features" option now works
+       correctly
+  <li> User output of features; use the file menu for all columns in the view, and the right-click
+       menus for all features/featuresets in a given column (SIRT:398145)
+  <li> Add more informative error message when features not created because of a style mismatch (SIRT:451891)
+</ul>
+
+<h4>Version 1.4.0</h4>
+<ul>
+  <li> Further developments to column filtering and splice highlighting
+  <li> GFF output has been internally unified and tidied up (SIRT:283110)
+  <li> Bug fixes and logging added to deal with slow startup problem on mac (SIRT:378314)
+  <li> Fix for collision detection (SIRT:447933)
+  <li> Fix for rare bug, zmap abort on exit (SIRT:437729)
+  <li> Bug fix for scrolling on reselection of a search result (SIRT:430753), and 
+      another zooming bug (SIRT:421191)
+</ul>
+
+<h4>Version 1.3.0</h4>
+<ul>
+  <li>Fix a bug where zmap was leaking memory when idle (SIRT:437717) 
+  <li>Fix a bug where ZMap could sometimes log repeated text many times (RT426799)
+  <li>Fix a bug with ZMap freezing (RT435980)
+  <li>Fix a bug causing lowercasing of featureset names on user loading.
+  <li>Fix a bug in state processing, did not clear up correctly on intermediate timeouts.
+  <li>Fix bugs in handling errors, not calling zmap to clear up modal lock.
+  <li>Fix install target on cygwin
+</ul>
+
+<h4>Version 1.2.0</h4>
+<ul>
+  <li> Splice highlighting speed improvments, and mark support
+  <li> Feature editing:
+  <ul>
+    <li> Functionality to edit the sequence of a transcript is now complete (SIRT:425064)
+    <li> Split codons around variations are highlighted
+    <li> You can now set attributes such as the CDS for the temp feature before saving it to a real featureset or sending to a peer
+    <li> Automatically highlight new evidence after adding it to the Annotation column
+    <li> Fixed an issue with highlighted evidence being re-added to the Annotation column
+  </ul>
+  <li> Double click blocking fixed
+  <li> Vanishing tooltips fixed
+  <li> Error with loading graph-type data fixed
+</ul>
+
+<h4>Version 1.1.0</h4>
+<ul>
+  <li> Splice highlighting implemented (SIRT:398088)
+  <li> Import of BAM/BIGWIG/GFF; output of GFF tidied up
+  <li> Feature editing and annotation column; many changes and improvments
+  <ul>
+    <li>Warn if there are unsaved features on exit
+    <li>Reverse complementing does not clear the Annotation column
+    <li>You can enable annotation from the Preferences dialog
+    <li>You can edit feature coords in the Create Feature dialog
+    <li>You can now highlight evidence for the Annotation column
+    <li>Prototype functionality added to edit the sequence of a transcript
+  </ul>
+  <li> Standalone ZMap can take several GFF files on command line 
+  <li> Internal handling of cigar parsing completed and generalised
+  <li> Input of GFF data with anonymous source ('.') allowed
+</ul>
+
+<h4>Version 1.0.0</h4>
+<ul>
+  <li>Implementation of zeroMQ transport layer for the remote communications protocol. Note that this is incompatible with previous versions of the protocol. Fixes several bugs including RT347901.
+  <li>There is now a tooltip to give the name of a column when mouse pointer enters it (RT398144).
+  <li>Fixed a bug with dumping features from the feature-search dialog.
+</ul>
+
+<h4>Version 0.23.0</h4>
+<ul>
+  <li>Temporary features can now be edited and saved in standalone ZMap, and exported back to GFF.
+  <li>ZMap now works on Windows under Cygwin.
+  <li>You can now drag features from ZMap into another application (e.g. Blixem). The dragged data is text in GFF3 format.
+</ul>
+
+<h4>Version 0.22.0</h4>
+<ul>
+  <li>ZMap now supports GFF version 3
+  <li>ZMap can now run standalone on a GFF (v2 or v3) file without requiring any configuration files
+</ul>
+
+<h4>Version 0.21.0</h4>
+<p>The following bugs in ZMap have been fixed:</p>
+<ul>
+  <li>graph drawing broken in several ways, e.g. log/linear style config does not work, also need "fill" mode.
+  <li>incorrect coords are displayed when you select an alignment gap.
+  <li>introns were being changed to deletions when passed to Blixem.
+  <li>composite features are not selectable.
+  <li>import dialog: the file type was not being correctly identified, and in GFF files spaces were being replaced by tabs.
+  <li>off-by-one drawing/clicking errors.
+</ul>
+
+<h4>Version 0.20.0</h4>
+<ul>
+  <li>Information in the ZMap features window is reordered
+  <li>Several feature redrawing bugs have been fixed.
+</ul>
+
+<h4>Version 0.19.0</h4>
+<ul>
+  <li>Prototype Annotation column in ZMap.  To turn this on, open the Columns dialog and click "Show" next to "Annotation". This will enable an Annotation submenu which will be visible when you right click.
+  <li>ORF column in 3 frame translation
+</ul>
+
+<h4>Version 0.18.0</h4>
+<ul>
+  <li>Zmap no longer has problems redrawing when zooming with DNA shown
+  <li>Fix a bug with the printing of decimal values in zmap's coordinate bar
+  <li>Fix a bug where some features are too narrow
+  <li>Fix an off-by-one error drawing the outline for gapped alignments
+  <li>Fix crashing in Show Translation caused by pathological cases
+</ul>
+
+<h4>Version 0.17.0</h4>
+<ul>
+  <li>Better highlighting of zmap active window: when you split a zmap window several times it can be confusing to know which window is the 'focus' window, now the title (sequence name) for the focus window will be highlighted in red.
+</Ul>
+
+<H4>Version 0.16.0</h4>
+<ul>
+  <li>number of failed columns was over-reported
+</ul>
+
+<h4>Version 0.15.0</h4>
+<ul>
+  <li>Multiple sessions can now be opened within the same Zmap
+  <li>Memory management bugs fixed in zmap
+</ul>
+
+<h4>Version 0.14.0</h4>
+<ul>
+  <li>Filtered columns now highlighted
+  <li>Fix a bug where scroll to feature fails when zoomed in
+  <li>Fix a bug where the view shifts when performing a vertical split
+</ul>
+
+</body>

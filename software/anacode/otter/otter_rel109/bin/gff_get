@@ -1,0 +1,121 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use URI::Escape qw(uri_unescape);
+
+use Bio::Otter::Lace::Defaults;
+use Bio::Otter::Fetch::GFF;
+use Bio::Otter::Mapping;
+
+# parse the command line
+
+my $options = {
+    gff_version => 3,
+};
+
+my @options_specs = qw(
+    gff_version=s
+    file=s
+    csver_remote=s
+    dataset=s
+    chr=s
+    start=i
+    end=i
+    gff_source=s
+    gff_seqname=s
+    version
+    );
+
+my @options_required = qw(
+    file
+    chr
+    start
+    end
+    );
+
+sub _key {
+    my ($key) = m(^(.*?)(?:=|$));
+    return $key;
+}
+sub _option {
+    return ( $_, \$options->{_key()} );
+}
+
+sub show_version {
+    print "gff_get 0.5\n"; 
+    exit 0;
+}
+
+print STDERR "$0", ( map { " '$_'" } @ARGV ), "\n";
+
+my @keys    = map { _key()    } @options_specs;
+my @options = map { _option() } @options_specs;
+
+Bio::Otter::Lace::Defaults::do_getopt(@options);
+show_version() if $options->{version};
+
+my @options_missing = grep { ! defined $options->{$_} } @options_required;
+die sprintf "missing options: %s\n",
+    join ', ', sort @options_missing
+    if @options_missing;
+$options->{$_} = uri_unescape($options->{$_}) for keys %{$options};
+my (
+    $gff_version,
+    $file,
+    $csver_remote,
+    $dataset,
+    $chr,
+    $start,
+    $end,
+    $gff_source,
+    $gff_seqname
+    ) = @{$options}{@keys};
+
+my $gff_fetch = Bio::Otter::Fetch::GFF->new( -file => $file );
+
+sub gff_escape_seqid {
+    # escapes everything except a restricted set of characters
+    s/([^-a-zA-Z0-9.:^*\$\@!+_?|])/sprintf "%%%02X", ord($1)/eg;
+    return;
+}
+
+my $chr_field = $gff_seqname || $chr;
+gff_escape_seqid for $chr_field;
+
+sub _print_header {
+    print
+        <<"GFF",
+##gff-version $gff_version
+GFF
+;
+    return;
+}
+
+sub _print_feature {
+    my ($feature, $fstart, $fend) = @_;
+    # the -gff_source flag overrides the source from the GFF file
+    my $source = $gff_source || $feature->source;
+    printf "%s\n", join "\t"
+        , $chr_field, $source, $feature->type, $fstart, $fend, @{$feature->rest};
+
+    return;
+}
+
+my $mapping =
+    Bio::Otter::Mapping->new_from_otter(
+        $dataset, $csver_remote, $chr, $start, $end);
+
+# map and print the features
+_print_header;
+$mapping->do_features($gff_fetch, $start, $end, \&_print_feature);
+
+exit;
+
+__END__
+
+=head1 AUTHOR
+
+Ana Code B<email> anacode@sanger.ac.uk
+

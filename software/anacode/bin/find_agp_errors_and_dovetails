@@ -1,0 +1,16 @@
+#!/bin/sh
+
+script=`basename $0`
+dir=`dirname $0`
+
+# echo $script
+#    that would add noise to (e.g.) AGPs on stdout
+
+if [ $script = "exec_in_chromoview" ]; then
+  script="$1"
+  shift
+fi
+
+source /software/anacode/chromoview/setup_chromoview_env
+
+exec /software/bin/perl -w /software/anacode/chromoview/$script $@

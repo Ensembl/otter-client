@@ -1,0 +1,11 @@
+#!/bin/sh
+
+script=`basename $0`
+dir=`dirname $0`
+
+want_ANACODE_ENV_TYPE=submissions
+. $dir/setup_anacode_env
+
+# was exec /software/bin/perl -w
+# changed to honour the script's choice 20120917 mca
+exec /software/anacode/embl_submissions/submissions/$script $@

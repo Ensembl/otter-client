@@ -1,0 +1,157 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+package Bio::Otter::GetScript::BAM;
+
+use base 'Bio::Otter::Utils::GetScript';
+
+sub version      { return 'bam_get 0.9'; }
+sub log_filename { return 'gff_log.txt'; }
+
+my $LOG = 1;
+
+use Bio::Otter::Log::Log4perl qw(:easy);
+use URI::Escape qw(uri_unescape);
+
+use Bio::DB::HTS;
+
+use Bio::Otter::Lace::Defaults;
+use Bio::Otter::Fetch::BAM;
+use Bio::Otter::Mapping;
+use Bio::Vega::Utils::GFF;
+
+# variables used by _print_feature()
+my ($gff_seqname, $gff_source, $gff_format);
+
+sub do_it {
+    my ($self) = @_;
+
+    my $args = $self->args;
+    $gff_seqname = $args->{'gff_seqname'} || $args->{'chr'};
+    $gff_source  = $args->{'zmap_style'} || $args->{'gff_source'};
+    my $gff_version = $args->{'gff_version'} || 3;
+    $gff_format = Bio::Vega::Utils::GFF::gff_format($gff_version);
+
+    my ($file, $dataset, $csver_remote, $chr, $start, $end) =
+        $self->read_args(qw{ file dataset csver chr start end });
+
+    my $sam = Bio::DB::HTS->new(
+        -bam        => $file,
+        -autoindex  => 0,   # Does setting this to zero trigger an error on calling bam_index if there is no .bai?
+    );
+
+    # Get list of chromosomes to make doubly sure that a failure is triggered before GFF header is printed.
+    $sam->hts_index;
+    # print STDERR "Header: ", $sam->header->text, "\n";
+
+    my $bam_fetch = Bio::Otter::Fetch::BAM->new(-sam => $sam);
+    my $mapping = $self->get_mapping;
+
+    # map and print the features
+    print "##gff-version $gff_version\n";
+    $mapping->do_features($bam_fetch, $start, $end, \&_print_feature);
+}
+
+my %seen;
+
+sub _print_feature {
+    my ($feature, $fstart, $fend) = @_;
+
+    my $name  = $feature->name;
+    my $flags = $feature->flag;
+
+    # For BAM files with multiple reads from the same template, mangle
+    # the name so that each read sequence gets a unique name.
+    # See SAM specifications:
+    # https://samtools.github.io/hts-specs/SAMv1.pdf
+    if ($flags & 0x40) {
+        if ($flags & 0x80) {
+            # Internal read from template
+            my $i = 1;
+            while ($seen{"i$i$name"}) {
+                $i++;
+            }
+            $name = "i$i$name";
+        }
+        else {
+            # First read from template
+            $name = 'w' . $name;
+        }
+    }
+    elsif ($flags & 0x80) {
+        # Last read from template
+        $name = 'c' . $name;
+    }
+    $seen{$name} = 1;
+
+    my $strand = '+';
+    my $query_seq = $feature->qseq;
+    my @cigar = @{ $feature->cigar_array };
+    if ($flags & 0x10) {
+        $strand = '-';
+        # Reverse complement sequence
+        $query_seq = reverse($query_seq);
+        $query_seq =~ tr{acgtrymkswhbvdnACGTRYMKSWHBVDN}
+                        {tgcayrkmswdvbhnTGCAYRKMSWDVBHN};
+        @cigar = reverse(@cigar);
+    }
+
+    # We calculate the query start and end ourselves.
+    # This used to be wrong in Bio::DB::Sam, but may now be fixed:
+    # https://github.com/GMOD/GBrowse-Adaptors/issues/4
+    my $q_start = 1;
+    my $q_end   = 0;
+    foreach my $ele (@cigar) {
+        my ($op, $len) = @$ele;
+        if ($op eq 'S' and ! $q_end) {
+            # A soft clipping operator at the start
+            $q_start += $len;
+            $q_end   += $len;
+        }
+        elsif ($op eq 'M' or $op eq 'I') {
+            # Operators that move along the query
+            $q_end += $len;
+        }
+    }
+
+    my $cigar_str = join('', map { $_->[1] . $_->[0] } @cigar);
+    my $attribute_hash = {
+        length     => $feature->l_qseq,
+        cigar_bam  => $cigar_str,
+        Target     => [$name, $q_start, $q_end, '+'],
+        sequence   => $query_seq,
+    };
+
+    my $phase = $feature->phase;
+    my $source = $gff_source || $feature->source_tag;
+    my ($score) = $feature->get_tag_values('AS');
+
+    print $gff_format->gff_line(
+        $gff_seqname, $source, 'nucleotide_match',
+        $fstart, $fend, $score, $strand, $phase,
+        $attribute_hash);
+
+    return;
+}
+
+## no critic (Modules::ProhibitMultiplePackages)
+
+package main;
+
+use Log::Log4perl::Level;
+
+Bio::Otter::GetScript::BAM
+    ->new(log4perl => $DEBUG)
+    ->run;
+
+exit;
+
+
+__END__
+
+=head1 AUTHOR
+
+Ana Code B<email> anacode@sanger.ac.uk
+

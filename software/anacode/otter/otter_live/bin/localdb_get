@@ -1,0 +1,43 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+package Bio::Otter::GetScript::LocalDBGet;
+
+use base 'Bio::Otter::Utils::GetScript::LocalDB';
+
+sub version { return 'localdb_get 0.5'; };
+sub log_filename { return 'localdb_log.txt'; }
+
+sub do_it {
+    my ($self) = @_;
+
+    $self->do_requires;
+
+    $self->set_extra_gff_args( pseudogene_fake_cds => 1 );
+
+    my $features = $self->get_features;
+    $self->send_feature_gff($features, 1); # 1 = process_gff
+
+    return;
+}
+
+## no critic (Modules::ProhibitMultiplePackages)
+
+package main;
+
+use Log::Log4perl::Level;
+
+Bio::Otter::GetScript::LocalDBGet
+    ->new(log4perl => $DEBUG)
+    ->run;
+
+exit;
+
+__END__
+
+=head1 AUTHOR
+
+Ana Code B<email> anacode@sanger.ac.uk
+

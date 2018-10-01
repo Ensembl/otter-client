@@ -1,0 +1,161 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use Bio::Otter::Log::Log4perl qw(:easy);
+use URI::Escape qw(uri_unescape);
+
+use Bio::DB::BigWig;
+use Bio::Otter::Lace::Defaults;
+use Bio::Otter::Fetch::BigWig;
+use Bio::Otter::Mapping;
+
+# parse the command line
+
+my $options = {
+    gff_version => 3,
+};
+
+my @options_specs = qw(
+    gff_version=s
+    file=s
+    csver_remote=s
+    dataset=s
+    chr=s
+    start=i
+    end=i
+    strand=s
+    gff_source=s
+    gff_seqname=s
+    version
+    );
+
+my @options_required = qw(
+    file
+    chr
+    start
+    end
+    gff_source
+    );
+
+sub _key {
+    my ($key) = m(^(.*?)(?:=|$));
+    return $key;
+}
+sub _option {
+    return ( $_, \$options->{_key()} );
+}
+
+sub show_version {
+    print "bigwig_get 0.5\n";
+    exit 0;
+}
+
+print STDERR "$0", ( map { " '$_'" } @ARGV ), "\n";
+
+my @keys    = map { _key()    } @options_specs;
+my @options = map { _option() } @options_specs;
+
+Bio::Otter::Lace::Defaults::do_getopt(@options);
+show_version() if $options->{version};
+
+Bio::Otter::Log::Log4perl->easy_init
+  ({ level => $DEBUG,
+     layout => 'bigwig_get.%c %p: %m%n' });
+
+my @options_missing = grep { ! defined $options->{$_} } @options_required;
+die sprintf "missing options: %s\n",
+    join ', ', sort @options_missing
+    if @options_missing;
+$options->{$_} = uri_unescape($options->{$_}) for keys %{$options};
+my (
+    $gff_version,
+    $file,
+    $csver_remote,
+    $dataset,
+    $chr,
+    $start,
+    $end,
+    $strand,
+    $gff_source,
+    $gff_seqname
+    ) = @{$options}{@keys};
+
+my $strand_field =
+    ( defined $strand && $strand == +1 ) ? '+' :
+    ( defined $strand && $strand == -1 ) ? '-' :
+    '.';
+
+my $bigwig = Bio::DB::BigWig->new( -bigwig => $file );
+
+my $bigwig_fetch = Bio::Otter::Fetch::BigWig->new( -bigwig => $bigwig );
+
+sub gff_escape {
+    # escapes a minimal set of characters
+    s/([\t\r\n[:cntrl:];=%&])/sprintf "%%%02X", ord($1)/eg;
+    return;
+}
+
+sub gff_escape_seqid {
+    # escapes everything except a restricted set of characters
+    s/([^-a-zA-Z0-9.:^*\$\@!+_?|])/sprintf "%%%02X", ord($1)/eg;
+    return;
+}
+
+sub gff_escape_source {
+    # escapes everything except a restricted set of characters
+    s/([^-a-zA-Z0-9.:^*\$\@!+_? ])/sprintf "%%%02X", ord($1)/eg;
+    return;
+}
+
+my $chr_field = $gff_seqname || $chr;
+gff_escape_seqid for $chr_field;
+my $source = $gff_source;
+gff_escape_source for $source;
+
+sub _print_header {
+    print
+        <<"GFF",
+##gff-version $gff_version
+GFF
+;
+    return;
+}
+
+sub _print_feature {
+    my ($feature, $fstart, $fend) = @_;
+
+    my @fields =
+        (
+         'score',
+         (sprintf "%d", $fstart),
+         (sprintf "%d", $fend),
+         abs($feature->score),
+         $strand_field,
+         '.', # phase, undefined
+         '', # attributes, empty
+        );
+
+    gff_escape for @fields;
+    printf "%s\n", join "\t", $chr_field, $source, @fields;
+
+    return;
+}
+
+my $mapping =
+    Bio::Otter::Mapping->new_from_otter(
+        $dataset, $csver_remote, $chr, $start, $end);
+
+# map and print the features
+_print_header;
+$mapping->do_features($bigwig_fetch, $start, $end, \&_print_feature);
+
+exit;
+
+__END__
+
+=head1 AUTHOR
+
+Ana Code B<email> anacode@sanger.ac.uk
+

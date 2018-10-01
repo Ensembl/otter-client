@@ -1,0 +1,44 @@
+=head2 Wed Jul 18 14:50:01 2018: C<Module> L<CryptX|CryptX>
+
+=over 4
+
+=item *
+
+C<installed into: /home/smm/test_havana/software/anacode/otter/otter_rel109auth/PerlModules/lib/x86_64-linux-gnu/perl/5.22.1/share/perl/5.22.1>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.061>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+
+=head2 Wed Jul 18 14:54:55 2018: C<Module> L<CryptX|CryptX>
+
+=over 4
+
+=item *
+
+C<installed into: /home/smm/test_havana/software/anacode/otter/otter_rel109auth/PerlModules/lib/x86_64-linux-gnu/perl/5.22.1/share/perl/5.22.1>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: 0.061>
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

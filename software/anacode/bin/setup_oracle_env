@@ -1,0 +1,23 @@
+#! /bin/sh  source_it__dont_run_it
+
+# This setup fragment is (should be) suitable for inclusion after
+# setting up the clean-sweep Otter environment.
+#
+# It provides for Hum::Tracking, which needs WrapDBI and hence
+# DBD::Oracle
+
+# Fn from /etc/bashrc for /software login scripts.
+# Not sure why it got lost, just put it back
+append_path()  { eval $1=\"\${$1}\${$1:+:}$2\"; export $1; }
+
+if ! echo "$PERL5LIB" | tr : "\n" | grep -q badger; then
+    append_path PERL5LIB /software/badger/lib/perl5
+    # may be fragile, but don't want to pull in the entire of Badger
+fi
+
+if [ -z "$ORACLE_HOME" ]; then
+    # Source the Oracle client setup.
+    #   11.2 instant client recommended by DBAs 2012-09 RT#245064
+    oravers=oracle-ic-11.2
+    . /software/$oravers/etc/profile.$oravers
+fi

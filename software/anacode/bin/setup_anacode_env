@@ -1,0 +1,145 @@
+#!/bin/sh
+
+# Some of this setup is not idempotent,
+# therefore we must run it just once.
+#
+# Also, different exec_in_foo invocations produce different
+# results, therefore track which we used.
+
+if [ -z "$want_ANACODE_ENV_TYPE" ]; then
+    # sourced by something that didn't tell us what it wants
+    # warn & hope for the best
+
+    want_ANACODE_ENV_TYPE=generic
+    echo "[w] $0 sourced setup_anacode_env without want_ANACODE_ENV_TYPE - assumed $want_ANACODE_ENV_TYPE" >&2
+fi
+
+# Currently included from
+#
+#   64-bit (Etch, Lenny, Lucid)
+#      exec_in_humscripts
+#      exec_in_submissons_scripts
+#      exec_in_utils
+#      /software/anacode/pipeline/setup*
+#
+#   32-bit: (Etch, Lenny, Lucid)
+#
+#   64-bit Precise
+#      exec_in_submissons_scripts
+
+
+if [ -z "$ANACODE_ENV_TYPE" ]; then
+
+    # (Hopefully) a clean slate - do setup
+
+    ANACODE_ENV_TYPE=$want_ANACODE_ENV_TYPE
+    export ANACODE_ENV_TYPE
+
+    anasoft="/software/anacode"
+
+
+    if [ -z "$OTTER_HOME" ]
+    then
+        OTTER_HOME=`readlink -f "$anasoft/otter/otter_live"`
+    fi
+    export OTTER_HOME
+
+    BADGER="/software/badger"
+    export BADGER
+
+    # jgrg - changed to replace PATH rather than append (26th March 2012)
+    anasoft_bin="$anasoft/bin:$BADGER/bin:/software/grit/bin:/software/pubseq/bin/emboss/bin:/software/perl-5.14.4/bin:/usr/local/bin:/usr/bin:/bin"
+    PATH="$anasoft_bin"
+
+    if ! [ $( which perl ) = '/software/perl-5.14.4/bin/perl' ]; then
+        echo "setup_anacode_env: got wrong Perl $( which perl ) off PATH=$PATH.  Something changed?" >&2
+        exit 18
+    fi
+
+
+    STADENROOT="$BADGER/opt/staden_production"
+    export STADENROOT
+
+    # Settings for wublast needed by local blast searches
+    WUBLASTFILTER=/software/anacode/bin/wublast/filter
+    export WUBLASTFILTER
+    WUBLASTMAT=/software/anacode/bin/wublast/matrix
+    export WUBLASTMAT
+
+    # set up Oracle environment:
+
+    ### extracted to setup_oracle_env 20120917 mca
+    #   because exec_in_humscripts wants to override PERL5LIB
+    #   after we set it here; but we must call Oracle setup
+    #   only once
+
+
+    # Setup LSF environment
+    if [ -e /usr/local/lsf/etc/lsf.conf ]
+    then
+        export LSF_ENVDIR=/etc
+        . /usr/local/lsf/conf/profile.lsf
+    fi
+
+    anasoft_distro="$anasoft/distro/$( $anasoft/bin/anacode_distro_code )"
+    
+
+#    anasoft_lib="$anasoft/lib" # not present for Precise, use distro/foo/lib
+
+# unused so far
+#    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH${LD_LIBRARY_PATH:+:}$anasoft_distro/lib"
+
+    PERL5LIB="\
+$OTTER_HOME/ensembl-otter/modules:\
+$OTTER_HOME/ensembl-otter/tk:\
+$OTTER_HOME/PerlModules:\
+$OTTER_HOME/ensembl-variation/modules:\
+$OTTER_HOME/ensembl/modules:\
+$OTTER_HOME/lib/perl5:\
+$anasoft_distro/lib/site_perl:\
+$anasoft_distro/lib:\
+$BADGER/lib/perl5"
+    export PERL5LIB
+
+
+    # Some flavours need extra config, was previously in the exec_in_*
+    if [ "$ANACODE_ENV_TYPE" = 'submissions' ]; then
+
+        # replace PERL5LIB because setup_anacode_env gives us
+        # PerlModules from the Otterlace client
+        PERL5LIB="\
+$anasoft/embl_submissions/PerlModules:\
+$anasoft_distro/lib/site_perl:\
+$anasoft_distro/lib"
+
+        source $anasoft/bin/setup_oracle_env
+
+    elif [ "$ANACODE_ENV_TYPE" = 'humscripts' ]; then
+
+        # now replace PERL5LIB because setup_anacode_env gives us
+        # PerlModules from the Otterlace client
+        PERL5LIB="\
+$anasoft/embl_submissions/PerlModules:\
+/software/anacode/otter/otter_live/ensembl/modules:\
+$anasoft_distro/lib/site_perl:\
+$anasoft_distro/lib"
+
+        source $anasoft/bin/setup_oracle_env
+
+    fi # else, no special extra setup
+
+
+elif [ "$ANACODE_ENV_TYPE" != "$want_ANACODE_ENV_TYPE" ]; then
+    # Setup has already been done...  but some scripts call others
+    # which want a different variety.
+
+    if [ "$want_ANACODE_ENV_TYPE" = 'submissions' ] &&
+        [ "$ANACODE_ENV_TYPE" = 'humscripts' ]; then
+        :
+        # this is OK, (while) submissions is a subset of humscripts
+    else
+        # This may be too severe.  Do we need to do it?
+        echo "$0: setup_anacode_env was already called for $ANACODE_ENV_TYPE, cannot do it again for $want_ANACODE_ENV_TYPE" >&2
+        exit 17
+    fi
+fi

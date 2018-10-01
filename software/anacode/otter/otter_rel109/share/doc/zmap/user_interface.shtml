@@ -1,0 +1,369 @@
+<!--#set var="banner" value="ZMap User Interface Guide"-->
+<!--#include virtual="/perl/header"-->
+
+<!--#set var="author" value="edgrif@sanger.ac.uk" -->
+
+
+<p><hr>
+<h2 id="overview">Overview</h2>
+
+<p>ZMap has a fairly complex display and this document describes the user interface
+and how to make use of ZMap to look at sequence data.</p>
+
+
+<h3>The Focus Feature</h3>
+
+<p>The focus column and/or feature is generally set by the user clicking on a
+feature or column. The column or feature is highlighted in a user-defined
+colour generally chosen to contrast with all other colours. The focus column or
+feature are used by a number of operations/options in zmap, e.g. "zoom to
+feature" zooms to the focus feature or does nothing if there isn't one.</p>
+
+<p>Note that when a feature is selected the column containing that feature is
+automatically selected.</p>
+
+<p>The current focus column/feature can be turned off and on using the
+<b>'h'</b> shortcut key. The code does this by storing a record of the selected
+feature/column when you first press the 'h' key, the feature is then reselected
+when you press the 'h' key again.</p>
+
+<p>As well as the 'h' key the 's' key (<a href="#splice_highlighting">see
+splice highlighting</a>) also stores the currently selected feature and in both
+cases you can reselect this feature by simply pressing <b>&lt;shift&gt;-h</b>.
+This can be useful if you had a feature selected but then needed to bump a
+column (which has the side effect of selecting that column). It's then easy to
+restore your previously selected feature using <b>&lt;shift&gt;-h</b>.</p>
+
+
+<h3>The Focus Feature vs. the Marked Feature</h3>
+
+<p>If you click on a column background then that column becomes the
+"focus" column and you can do various short cut operations on it such
+as pressing "b" to bump it. If you click on a feature then that feature
+becomes the "focus" feature and similarly you can do various
+short cut operations on it such as zooming in to it. (Note when
+you select a feature then its column automatically becomes the
+focus column.)</p>
+
+<p>While the focus facility is useful the focus changes every time you
+click on a new feature. Sometimes you want to more permanently select
+a "working" feature or area, to do this you can "mark" the feature or area and it will
+stay "marked" until you unmark it.</p>
+
+<p>Marking can be done in one of two ways:</p>
+
+<p><b>To mark a feature:</b>
+<ol>
+  <li>Select a feature to make it the focus feature.
+  <li>Press "m" to mark the feature, the feature will be highlighted
+      with a blue overlay.
+</ol>
+
+<p><b>To mark an area:</b>
+<ol>
+  <li>Select an area by holding down the <code>left mouse button</code> and dragging out a box to
+      to mark the area.
+  <li>Press "m" to mark the area.
+</ol>
+
+<p>In either case the "marked" area is left clear while the unmarked
+area above and below is marked with a blue overlay.</p>
+
+<p><b>Unmarking is by:</b>
+
+<ul>
+  <li>Pressing "m" or "M" again, i.e. the mark key toggles marking on and off.
+</ul>
+
+
+<p>Feature marking behaves differently according to the type of feature you
+highlighted prior to marking and according to whether you press "m" or "M" to do
+the marking:</p>
+
+
+<p><b>Pressing "m":</b>
+
+<P>The mark is made around all features you have highlighted, e.g. a whole transcript,
+a single exon, several HSPs.</p>
+
+
+<p><b>Pressing "M":</b>
+<ul>
+  <li><b>Transcripts:</b> the whole transcript becomes the marked feature and the
+      marked area extends from the start to the end of the transcript.
+  <li><b>Alignments:</b> all the HSPs for that alignment become the marked feature and
+      the marked area extends from the start to the end of all the HSPs.
+  <li><b>All other features:</b> the feature becomes the marked feature and the
+      marked area extends from the start to the end of the feature.
+</ul>
+
+
+<p>If no feature is selected but an area was selected using the left button rubberband
+then that area is marked.</p>
+
+<p>If no feature or area is selected then the visible screen area minus a small top/bottom
+margin is marked.</p>
+
+
+
+
+<h3>Zooming to a feature</h3>
+
+<p>Zooming can be done in different ways depending on the type of feature selected:</p>
+
+<p><b>Pressing "z":</b>
+
+<P>Zooms to the extent of all features you have highlighted, e.g. a whole transcript,
+a single exon, several HSPs.</p>
+
+
+<p><b>Pressing "Z":</b></p>
+<ul>
+  <li><b>Intron or Exon:</b> zooms to the whole transcript.
+  <li><b>HSP(s):</b> zooms to the extent of all HSPs of the same sequence.
+  <li><b>All other features:</b> zooms to the feature.
+</ul>
+
+<p>If no feature is selected but an area was selected using the left button rubberband
+then that area is zoomed to.</p>
+
+
+
+
+<p><hr></p>
+<h2 id="efficient_use">Making Good Use Of ZMap</h3>
+
+<p>In general zmap will be faster for zooming, bumping etc if you make good use of the
+built in short cuts, these can often avoid the need for ZMap to redraw large amounts
+of data that you may not even be interested in.
+
+<p>The following sections give some examples to illustrate this.
+
+
+<h3>Marking a Feature and Zooming and Bumping</h3>
+
+<p>This section describes how to select a feature, mark it and then
+zoom in to it and examine evidence that overlaps that feature.
+
+<p>Selecting, marking, zooming:
+
+<ol>
+  <li>Click on the feature you are interested in (perhaps a transcript)
+  <li>Mark it by pressing "m"
+  <li>Zoom in to the feature by pressing either "z" or "Z" (as described above).
+</ol>
+
+<p>Now when you bump an evidence column to look at matches that overlap the
+feature you will find that bumping is much faster because only those matches
+that overlap the feature get bumped and you also have fewer matches to look at.
+The quickest way to bump a column is:
+
+<ol>
+  <li>Click on the column to select it
+  <li>Bump it by pressing "b" (if you press "b" again the column will be unbumped)
+</ol>
+
+
+<p>Bumping has changed considerably from acedb FMap, the main points to note are:
+
+<ul>
+  <li>If you have marked a feature then bumping is restricted to matches that overlap that feature,
+      otherwise bumping is for the whole column.
+  <li>If you use the default bumping mode (i.e. you pressed "b") then you will find all matches from
+      the same piece of evidence are joined by coloured bars, the colours indicate the level of colinearity
+      between the matches:
+      <ul>
+	<li>green: the matches at either end are perfectly contiguous, e.g. 100, 230  ---> 231, 351
+	<li>orange: the matches at either end are colinear but not perfect, e.g. 100, 230 ---> 297, 351
+	<li>red: the matches are not colinear, e.g.  100, 230 ---> 141, 423
+      </ul>
+      you can click on the bars to see the evidence name and its column name is, e.g. "Tr:Q95JD1.1", "BLASTX"
+</ul>
+
+<p>The colouring means you can instantly see all matches for a piece of evidence but also how good
+an alignment they are to the feature you marked.
+
+
+<h3>Zooming in to an Area</h3>
+
+<p>Sometimes you don't have a particular feature you want to zoom to but you do
+know the approximate area. Zmap allows you to interactively mark a rectangle to zoom in to.
+
+<p>To mark the rectangle:
+
+<ul>
+  <li>Press the Cntl and left mouse button at the top left of the area you want to outline
+      and then drag out the outline until it encloses the area you want to zoom to. When you
+      release the button, zmap zooms in to that rectangle.
+</ul>
+
+
+
+<h3>Selecting Multiple Features and Hiding/Showing them</h3>
+
+<p>Multiple features can be selected and then hidden/shown by:
+
+<ul>
+  <li>Select the features by holding the Shift key down and left clicking with mouse (same as for
+      multi select on the Mac, Windows etc). Note that for alignments displayed with the bars that
+      join up mulitple hits you can click on the hit _or_ the bar.
+  <li>Remove the selected features by pressing Delete and restore them by pressing Shift-Delete
+      (Note on the Mac you need to press Fn-Delete and Shift-Fn-Delete.)
+</ul>
+
+
+
+
+
+<h3 id="feature_filtering">Feature Filtering</h3>
+
+<p>Features can be filtered by a variety of different criteria with the results
+being displayed in different ways according to the criteria. Filtering is accessed
+via the "Column Filtering" menu:</p>
+
+<!--# IMAGE NEEDED HERE....DO AT WORK..... -->
+<img src="Filter_menu.png" class="img" alt="Filter menu options">
+
+<p>The following table explains what each does:</p>
+
+<table border cellpadding=10>
+
+  <tr>
+    <th colspan=3>control keys</th>
+  </tr>
+  <tr>
+    <th>Filter Option</th> <th>Description</th> <th>Action</th>
+  </tr>
+  <tr>
+    <td><b>Common Splices</b></td>
+    <td>All splices that match splices in the currently selected feature are highlighted.</td>
+    <td>Matching splices are highlighted with a red box.</td>
+  </tr>
+  <tr>
+    <td><b>Non-matching Introns</b></td>
+    <td>Select features with "introns" (transcripts, alignments) that do <b>not</b> match the selected feature.</td>
+    <td>Features with any matching introns are hidden.</td>
+  </tr>
+  <tr>
+    <td><b>Non-matching Exons</b></td>
+    <td>Select features with "exons" (transcripts, alignments) that do <b>not</b> match the selected feature.</td>
+    <td>Features with any matching exons are hidden.</td>
+  </tr>
+  <tr>
+    <td><b>Non-matching Confirmed Introns</b></td>
+    <td>Select features with introns objects that do <b>not</b> match the selected feature.</td>
+    <td>Any matching intron objects are hidden.</td>
+  </tr>
+  <tr>
+    <td><b>Matching Exons</b></td>
+    <td>Select features with "exons" (transcripts, alignments) that match the selected feature.</td>
+    <td>Features with any exons that don't match are hidden.</td>
+  </tr>
+  <tr>
+    <td><b>Matching CDS</b></td>
+    <td>Select features with CDS exons that match the selected feature.</td>
+    <td>Features with any CDS exons that don't match are hidden.</td>
+  </tr>
+  <tr>
+    <td><b>Unfilter</b></td>
+    <td>Re-display all features.</td>
+    <td>Unhide all features.</td>
+  </tr>
+
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+<p id="splice_highlighting">You can select a feature and then by pressing 's'
+you will see highlighted in red all the start/ends of features in other columns
+that match the highlighted features start/ends, e.g. highlight a transcript,
+press 's' and you will be able to see all the EST's, mRNA's etc that line up
+with the transcript.</p>
+
+<p>The below images show before and afer highlighting:</p>
+
+<img src="Splice_highlight_off.png" class="img" alt="splice highlighting off">
+<img src="Splice_highlight_on.png" class="img" alt="splice highlighting on">
+
+<p>The highlighted feature is a protein coding primary transcript and the splice
+highlighted features are BLAT EST alignments.</p>
+
+<p>Some notes:</p>
+
+<ul>
+<li>currently the highlighting only works on the "box-like" features, it does
+not include graph or heatmap data, let us know if you would like us to expand
+highlighting to other types of feature.</li>
+
+<li>you can select any box-like feature in any column and use the highlighting
+so you can select a transcript and see which EST's match it or conversely
+select an EST and see which transcripts match it and so on.</li>
+
+<li>the 's' key toggles the highlighting on/off and you may find it useful to
+flick it on/off as it makes it easier to spot the highlights as they blink,
+this is particularly so if you are zoomed right out.</li>
+
+<li>the highlights are drawn in columns whether they are bumped or not but of
+course to actually see which features are highlighted you will need to bump
+the relevant column.</li>
+
+<li>if you have selected a feature, pressed 's' and now find that you want to
+bump a column follow this procedure:</li>
+
+    <ol>
+      <li>select the column and bump it, you will see all the splices</li>
+
+      <li>restore the feature you originally had selected feature by pressing
+	  shift-h (as described in 1) above)</li>
+
+      <li>now you can continue to press 's' with the reselected feature</li>
+    </ol>
+</ul>
+
+
+
+<p><hr>
+<h2 id="alignment_display">Alignment Display</h2>
+<p>
+
+<p>
+<img src="align1.png" alt="[Image of alignment displayed in ZMap]" align=left border=2 hspace=20>
+
+<p>(Please refer to the picture to the left in the following description.)
+
+<p>ZMap gives three types of visual indication about the quality of alignments to a sequence:
+
+<p><b>Alignment Quality:</b> the width of every alignment displayed is a measure of its score,
+the wider it is the closer the score is to 100% (the precise score is displayed in the ZMap
+details bar by clicking on the alignment).
+
+<p><b>Alignment colinearity:</b> Where a particular protein or DNA sequence has several alignments to a sequence, 
+ZMap gives a visual indicator of the colinearity of that set of alignments. This is given by the colour of
+the bars joining up the alignment blocks:
+
+<ul>
+  <li><b>Green:</b> the blocks are "perfectly" colinear within a given "slop" factor which can be set in
+      the style for that set of alignments.
+  <li><b>Orange:</b> the blocks are colinear but there is missing sequence in the alignment.
+  <li><b>Red:</b> the blocks are not colinear.
+</ul>
+
+<p><b>Missing start/end:</b> The first and last alignments in the set are marked with a red bar at their
+start/end respectively to indicate that they do not start at the first base/amino acid
+and/or do not end with the last base/amino acid of the alignment sequence.
+
+<p>The third alignment from the right shows all of these indicators, while the next alignment to the left
+shows a section that aligns colinearly for only part of its sequence.
+
+
+
+<!--#include virtual="/perl/footer"-->

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+#lsb_release -sc
+
+# hacked for redhat 7 which returns Maipo but we need trusty
+
+echo 'trusty'
+
+
