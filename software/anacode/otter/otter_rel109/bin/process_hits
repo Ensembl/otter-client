@@ -15,6 +15,7 @@ use Bio::Otter::Lace::ProcessGFF;
 use Zircon::Context::ZMQ::AnyEvent;
 use Zircon::Protocol;
 
+use Bio::Otter::Utils::GetScript;
 use base qw(
     Bio::Otter::Utils::GetScript::LocalDB
     Zircon::Protocol::Server
@@ -174,11 +175,14 @@ sub _column_adaptor {
 sub get_taxonomy_info {
     my ($self, @ids) = @_;
 
+    my $author = Bio::Otter::Utils::GetScript->arg('author');
+    my $id = sprintf('id=%s', join ',', @ids); 
+    my $params = join '&', 'author' . '=' . $author, $id;
+
     my $response = $self->do_http_request(
         'POST',
         'get_taxonomy_info',
-        sprintf('id=%s', join ',', @ids),
-        'get_taxonomy_info',
+        $params,'get_taxonomy_info',
         );
     return $response;
 }
@@ -215,4 +219,4 @@ __END__
 =head1 AUTHOR
 
 Ana Code B<email> anacode@sanger.ac.uk
-
+,
