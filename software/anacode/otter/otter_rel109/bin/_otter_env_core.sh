@@ -129,7 +129,7 @@ $ensembl_otter_home/modules:\
 $ensembl_home/ensembl/modules:\
 $otter_lib_perl5:\
 $ensembl_otter_home/tk:\
-" 
+${PERL5LIB:+:${PERL5LIB}}"
 #Edit 3-4 /usr/local/lib/perl5/5.18.2:\
 #/usr/local/lib/perl5/5.18.2/x86_64-linux\
 #/usr/lib/x86_64-linux-gnu/perl/5.22/:\

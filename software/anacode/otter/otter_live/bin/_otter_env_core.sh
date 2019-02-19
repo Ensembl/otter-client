@@ -143,7 +143,7 @@ $ensembl_otter_home/modules:\
 $ensembl_home/ensembl/modules:\
 $otter_lib_perl5:\
 $ensembl_otter_home/tk\
-"
+${PERL5LIB:+:${PERL5LIB}}"
 
 osname="$( uname -s )"
 
