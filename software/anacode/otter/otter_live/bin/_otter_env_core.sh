@@ -13,8 +13,8 @@
 # OTTER_LIB_PERL5_DEV      to override the location of other perl modules (Zircon).
 
 version="109"
-var=$PWD 
-anasoft="${var}/../../../../../software/anacode" 
+var=`dirname $(readlink -f $0)`
+anasoft="${var}/../../../../../software/anacode"
 OTTER_HOME="${var}/../../../../../software/anacode/otter/otter_rel109" #Editing this line to call 109 version
 otter_perl="/usr/bin"
 
